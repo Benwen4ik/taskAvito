@@ -3,6 +3,7 @@ package com.tech.linkShort.controllers;
 import com.tech.linkShort.entities.Link;
 import com.tech.linkShort.entities.LinkDTO;
 import com.tech.linkShort.services.LinkService;
+import com.tech.linkShort.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +23,14 @@ public class LinkController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<HttpStatus> createLink(@RequestBody LinkDTO linkDTO){
+    public ResponseEntity<Response> createLink(@RequestBody LinkDTO linkDTO){
         if (linkService.searchByFullUrl(linkDTO.getFullURL()) != null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>( Response.builder().message("Такая ссылка уже сохранена")
+                    .timestamp(System.currentTimeMillis()).build(), HttpStatus.resolve(200));
         }
-        linkService.save(linkDTO.getFullURL());
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        String token = linkService.save(linkDTO.getFullURL());
+        return new ResponseEntity<>(Response.builder().message(token)
+                .timestamp(System.currentTimeMillis()).build(),HttpStatus.CREATED);
     }
 
     @GetMapping("/{token}")

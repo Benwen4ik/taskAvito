@@ -30,10 +30,11 @@ public class LinkService {
         return linkRepository.findByFullURL(fullUrl).orElse(null);
     }
 
-    public void save(String url) {
+    public String save(String url) {
         String token = sqids.encode(List.of(randomLong()));
         Link link = Link.builder().fullURL(url).token(token).build();
         linkRepository.save(link);
+        return token;
     }
 
     public Link searchByToken(String token) {

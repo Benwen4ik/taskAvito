@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.net.http.HttpRequest;
 
 @RestController
@@ -34,11 +35,12 @@ public class LinkController {
     }
 
     @GetMapping("/{token}")
-    public LinkDTO getLinkByToket(@PathVariable String token){
+    public ResponseEntity<Void> getLinkByToket(@PathVariable String token){
         Link link = linkService.searchByToken(token);
         if(link == null){
             //return ;
         }
-        return LinkDTO.builder().fullURL(link.getFullURL()).build();
+        //  return LinkDTO.builder().fullURL(link.getFullURL()).build();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(link.getFullURL())).build();
     }
 }
